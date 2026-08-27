@@ -1,0 +1,22 @@
+@model QLPhongHoc.Models.LopDto
+@{
+    ViewData["Title"] = "Chi tiết lớp";
+}
+
+<h2>Chi tiết lớp</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Mã lớp</dt>
+    <dd class="col-sm-9">@Model.MaLopCode</dd>
+
+    <dt class="col-sm-3">Tên lớp</dt>
+    <dd class="col-sm-9">@Model.TenLop</dd>
+
+    <dt class="col-sm-3">Khối</dt>
+    <dd class="col-sm-9">@Model.Khoi</dd>
+
+    <dt class="col-sm-3">Giáo viên CN</dt>
+    <dd class="col-sm-9">@Model.TenGVCN</dd>
+</dl>
+
+<a class="btn btn-secondary" href="@Url.Action("Index","Lop")">Quay lại</a>

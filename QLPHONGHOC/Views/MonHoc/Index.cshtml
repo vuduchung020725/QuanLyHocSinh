@@ -1,0 +1,38 @@
+@model List<QLPhongHoc.Models.MonHocDto>
+@{
+    ViewData["Title"] = "Danh sách Môn học";
+}
+
+<h2>Danh sách Môn học</h2>
+@if (User.IsInRole("ADMIN")) { <p><a class="btn btn-primary" href="@Url.Action("Create","MonHoc")">+ Thêm môn</a></p> }
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Mã môn</th>
+            <th>Tên môn</th>
+            <th>Số tiết</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var it in Model)
+    {
+        <tr>
+            <td>@it.MaMon</td>
+            <td>@it.TenMon</td>
+            <td>@it.SoTiet</td>
+            <td>
+                <a class="btn btn-sm btn-secondary" href="@Url.Action("Details","MonHoc", new { id = it.MaMonHoc })">Xem</a>
+                @if (User.IsInRole("ADMIN")) {
+                    <a class="btn btn-sm btn-primary" href="@Url.Action("Edit","MonHoc", new { id = it.MaMonHoc })">Sửa</a>
+                    <form method="post" action="@Url.Action("Delete","MonHoc", new { id = it.MaMonHoc })" style="display:inline;" onsubmit="return confirm('Xóa môn học?');">
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-sm btn-danger" type="submit">Xóa</button>
+                    </form>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

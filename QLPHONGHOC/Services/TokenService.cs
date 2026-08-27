@@ -54,7 +54,7 @@ namespace QLPhongHoc.Services
                     new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
                     new Claim("HoTen", user.HoTen ?? string.Empty),
                     new Claim("MaVaiTro", user.MaVaiTro.ToString()),
-                    new Claim("TrangThai", user.TrangThai ?? "Hoạt động"),
+                    new Claim("TrangThai", user.TrangThai ? "Hoạt động" : "Khóa"),
                     new Claim("VaiTro", user.VaiTro?.TenVaiTro ?? "User")
                 };
 

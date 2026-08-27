@@ -1,0 +1,23 @@
+@model QLPhongHoc.Models.CreateMonHocRequest
+@{
+    ViewData["Title"] = "Thêm môn học";
+}
+
+<h2>Thêm môn học</h2>
+
+<form method="post" asp-action="Create">
+    <div class="mb-3">
+        <label class="form-label">Mã môn</label>
+        <input asp-for="MaMon" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Tên môn</label>
+        <input asp-for="TenMon" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Số tiết</label>
+        <input asp-for="SoTiet" type="number" class="form-control" />
+    </div>
+    <button class="btn btn-primary" type="submit">Lưu</button>
+    <a class="btn btn-secondary" href="@Url.Action("Index","MonHoc")">Hủy</a>
+</form>

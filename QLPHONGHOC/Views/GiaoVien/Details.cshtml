@@ -1,0 +1,19 @@
+@model QLPhongHoc.Models.GiaoVienDto
+@{
+    ViewData["Title"] = "Chi tiết giáo viên";
+}
+
+<h2>Chi tiết giáo viên</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Mã GV</dt>
+    <dd class="col-sm-9">@Model.MaGV</dd>
+
+    <dt class="col-sm-3">Họ tên</dt>
+    <dd class="col-sm-9">@Model.HoTen</dd>
+
+    <dt class="col-sm-3">Chuyên môn</dt>
+    <dd class="col-sm-9">@Model.ChuyenMon</dd>
+</dl>
+
+<a class="btn btn-secondary" href="@Url.Action("Index","GiaoVien")">Quay lại</a>

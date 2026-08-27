@@ -1,0 +1,39 @@
+@model QLPhongHoc.Models.CreateLopRequest
+@{
+    ViewData["Title"] = "Thêm lớp";
+    var namhocs = ViewData["NamHocs"] as List<QLPhongHoc.Models.NamHocDto> ?? new();
+    var giaoviens = ViewData["GiaoViens"] as QLPhongHoc.Models.PagedResult<QLPhongHoc.Models.GiaoVienDto> ?? new();
+}
+
+<h2>Thêm lớp</h2>
+
+<form method="post" asp-action="Create">
+    <div class="mb-3">
+        <label class="form-label">Mã lớp</label>
+        <input asp-for="MaLopCode" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Tên lớp</label>
+        <input asp-for="TenLop" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Khối</label>
+        <input asp-for="Khoi" type="number" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Năm học</label>
+        <select asp-for="MaNamHoc" class="form-control">
+            <option value="">-- Chọn năm học --</option>
+            @foreach(var n in namhocs) { <option value="@n.MaNamHoc">@n.TenNamHoc</option> }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Giáo viên chủ nhiệm</label>
+        <select asp-for="MaGVCN" class="form-control">
+            <option value="">-- Chọn GV --</option>
+            @foreach(var g in giaoviens.Items) { <option value="@g.MaGiaoVien">@g.HoTen</option> }
+        </select>
+    </div>
+    <button class="btn btn-primary" type="submit">Lưu</button>
+    <a class="btn btn-secondary" href="@Url.Action("Index","Lop")">Hủy</a>
+</form>

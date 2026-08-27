@@ -1,0 +1,35 @@
+@model QLPhongHoc.Models.PagedResult<QLPhongHoc.Models.DiemDto>
+@{
+    ViewData["Title"] = "Danh sách Điểm";
+}
+
+<h2>Danh sách Điểm</h2>
+@if (User.IsInRole("ADMIN") || User.IsInRole("TEACHER")) { <p><a class="btn btn-primary" href="@Url.Action("Create","Diem")">+ Nhập điểm</a></p> }
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>HS</th>
+            <th>Lớp</th>
+            <th>Môn</th>
+            <th>Học kỳ</th>
+            <th>Điểm TB</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var it in Model.Items)
+    {
+        <tr>
+            <td>@it.TenHocSinh (@it.MaHS)</td>
+            <td>@it.TenLop</td>
+            <td>@it.TenMon</td>
+            <td>@it.TenHocKy</td>
+            <td>@(it.DiemTrungBinh?.ToString("0.##") ?? "-")</td>
+            <td>
+                <a class="btn btn-sm btn-secondary" href="#">Xem</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

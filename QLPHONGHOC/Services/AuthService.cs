@@ -128,7 +128,7 @@ namespace QLPhongHoc.Services
                         SoDienThoai = user.SoDienThoai,
                         MaVaiTro = user.MaVaiTro,
                         TenVaiTro = user.VaiTro?.TenVaiTro,
-                        TrangThai = user.TrangThai
+                        TrangThai = user.TrangThai ? "Hoạt động" : "Khóa"
                     }
                 };
             }
@@ -222,7 +222,7 @@ namespace QLPhongHoc.Services
                     Email = request.Email,
                     SoDienThoai = request.SoDienThoai,
                     MaVaiTro = 2, // Vai trò mặc định (User)
-                    TrangThai = "Chờ duyệt" // Trạng thái mặc định
+                    TrangThai = false // Trạng thái mặc định (Chờ duyệt)
                 };
 
                 _context.TAIKHOAN.Add(newUser);
@@ -296,47 +296,17 @@ namespace QLPhongHoc.Services
         /// </summary>
         private LoginResponse ValidateAccountStatus(TaiKhoan user)
         {
-            switch (user.TrangThai?.ToLower() ?? "")
+            if (!user.TrangThai)
             {
-                case "chờ duyệt":
-                    _logger.LogWarning($"Login attempt with pending account: {user.TenDangNhap}");
-                    return new LoginResponse
-                    {
-                        Success = false,
-                        Message = "Tài khoản của bạn đang chờ phê duyệt.",
-                        ErrorCode = "ACCOUNT_PENDING"
-                    };
-
-                case "khóa":
-                    _logger.LogWarning($"Login attempt with locked account: {user.TenDangNhap}");
-                    return new LoginResponse
-                    {
-                        Success = false,
-                        Message = "Tài khoản đã bị khóa.",
-                        ErrorCode = "ACCOUNT_LOCKED"
-                    };
-
-                case "từ chối":
-                    _logger.LogWarning($"Login attempt with rejected account: {user.TenDangNhap}");
-                    return new LoginResponse
-                    {
-                        Success = false,
-                        Message = "Yêu cầu đăng ký tài khoản bị từ chối.",
-                        ErrorCode = "ACCOUNT_REJECTED"
-                    };
-
-                case "hoạt động":
-                    return new LoginResponse { Success = true };
-
-                default:
-                    _logger.LogWarning($"Login attempt with unknown status: {user.TrangThai}");
-                    return new LoginResponse
-                    {
-                        Success = false,
-                        Message = "Tài khoản không ở trạng thái hợp lệ.",
-                        ErrorCode = "INVALID_STATUS"
-                    };
+                _logger.LogWarning($"Login attempt with pending or locked account: {user.TenDangNhap}");
+                return new LoginResponse
+                {
+                    Success = false,
+                    Message = "Tài khoản của bạn đang chờ phê duyệt hoặc đã bị khóa.",
+                    ErrorCode = "ACCOUNT_DISABLED"
+                };
             }
+            return new LoginResponse { Success = true };
         }
     }
 }

@@ -1,0 +1,25 @@
+@model QLPhongHoc.Models.HocSinhDto
+@{
+    ViewData["Title"] = "Chi tiết học sinh";
+}
+
+<h2>Chi tiết học sinh</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Mã HS</dt>
+    <dd class="col-sm-9">@Model.MaHS</dd>
+
+    <dt class="col-sm-3">Họ tên</dt>
+    <dd class="col-sm-9">@Model.HoTen</dd>
+
+    <dt class="col-sm-3">Ngày sinh</dt>
+    <dd class="col-sm-9">@Model.NgaySinh</dd>
+
+    <dt class="col-sm-3">Giới tính</dt>
+    <dd class="col-sm-9">@Model.GioiTinh</dd>
+
+    <dt class="col-sm-3">Lớp</dt>
+    <dd class="col-sm-9">@Model.TenLop</dd>
+</dl>
+
+<a class="btn btn-secondary" href="@Url.Action("Index","HocSinh")">Quay lại</a>

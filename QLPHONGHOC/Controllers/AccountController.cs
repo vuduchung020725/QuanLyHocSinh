@@ -14,6 +14,13 @@ namespace QLPhongHoc.Controllers
         private readonly IAuthService _authService;
         private readonly ILogger<AccountController> _logger;
 
+        private const string COOKIE_JWT = "QLHS_JWT";
+        private const string COOKIE_MATK = "QLHS_MaTK";
+        private const string COOKIE_TENDN = "QLHS_TenDN";
+        private const string COOKIE_VAITRO = "QLHS_VaiTro";
+        private const string COOKIE_HOTEN = "QLHS_HoTen";
+        private static readonly TimeSpan CookieLifetime = TimeSpan.FromHours(24);
+
         public AccountController(
             QLPhongHocContext context,
             IAuthService authService,
@@ -22,6 +29,60 @@ namespace QLPhongHoc.Controllers
             _context = context;
             _authService = authService;
             _logger = logger;
+        }
+
+        private void PersistAuthCookies(LoginResponse response, bool ghiNho)
+        {
+            var opts = new CookieOptions
+            {
+                HttpOnly = true,
+                IsEssential = true,
+                Secure = Request.IsHttps,
+                SameSite = SameSiteMode.Lax,
+                Expires = ghiNho ? DateTimeOffset.Now.Add(CookieLifetime) : null
+            };
+            Response.Cookies.Append(COOKIE_JWT, response.Token, opts);
+            Response.Cookies.Append(COOKIE_MATK, response.UserInfo.MaTaiKhoan.ToString(), opts);
+            Response.Cookies.Append(COOKIE_TENDN, response.UserInfo.TenDangNhap ?? string.Empty, opts);
+            Response.Cookies.Append(COOKIE_VAITRO, response.UserInfo.TenVaiTro ?? string.Empty, opts);
+            Response.Cookies.Append(COOKIE_HOTEN, response.UserInfo.HoTen ?? string.Empty, opts);
+        }
+
+        private void SaveSessionForLogin(LoginResponse response)
+        {
+            Microsoft.AspNetCore.Http.SessionExtensions.SetString(
+                HttpContext.Session,
+                SessionHelper.SessionUserId,
+                response.UserInfo.MaTaiKhoan.ToString());
+
+            Microsoft.AspNetCore.Http.SessionExtensions.SetString(
+                HttpContext.Session,
+                SessionHelper.SessionHoTen,
+                response.UserInfo.HoTen ?? string.Empty);
+
+            Microsoft.AspNetCore.Http.SessionExtensions.SetString(
+                HttpContext.Session,
+                SessionHelper.SessionTenVaiTro,
+                response.UserInfo.TenVaiTro ?? string.Empty);
+
+            Microsoft.AspNetCore.Http.SessionExtensions.SetString(
+                HttpContext.Session,
+                SessionHelper.SessionMaVaiTro,
+                response.UserInfo.MaVaiTro.ToString());
+
+            Microsoft.AspNetCore.Http.SessionExtensions.SetString(
+                HttpContext.Session,
+                "JwtToken",
+                response.Token);
+        }
+
+        private void ClearAuthCookies()
+        {
+            foreach (var key in new[] { COOKIE_JWT, COOKIE_MATK, COOKIE_TENDN, COOKIE_VAITRO, COOKIE_HOTEN })
+            {
+                if (Request.Cookies.ContainsKey(key))
+                    Response.Cookies.Delete(key, new CookieOptions { Secure = Request.IsHttps, SameSite = SameSiteMode.Lax });
+            }
         }
 
         /// <summary>
@@ -55,32 +116,8 @@ namespace QLPhongHoc.Controllers
                 return View();
             }
 
-            // Lưu vào Session
-            Microsoft.AspNetCore.Http.SessionExtensions.SetString(
-                HttpContext.Session,
-                SessionHelper.SessionUserId,
-                response.UserInfo.MaTaiKhoan.ToString());
-
-            Microsoft.AspNetCore.Http.SessionExtensions.SetString(
-                HttpContext.Session,
-                SessionHelper.SessionHoTen,
-                response.UserInfo.HoTen ?? string.Empty);
-
-            Microsoft.AspNetCore.Http.SessionExtensions.SetString(
-                HttpContext.Session,
-                SessionHelper.SessionTenVaiTro,
-                response.UserInfo.TenVaiTro ?? string.Empty);
-
-            Microsoft.AspNetCore.Http.SessionExtensions.SetString(
-                HttpContext.Session,
-                SessionHelper.SessionMaVaiTro,
-                response.UserInfo.MaVaiTro.ToString());
-
-            // Lưu JWT Token vào Session (nếu cần)
-            Microsoft.AspNetCore.Http.SessionExtensions.SetString(
-                HttpContext.Session,
-                "JwtToken",
-                response.Token);
+            SaveSessionForLogin(response);
+            PersistAuthCookies(response, GhiNho);
 
             _logger.LogInformation($"User {response.UserInfo.TenDangNhap} logged in successfully");
             TempData["Success"] = "Đăng nhập thành công.";
@@ -112,6 +149,9 @@ namespace QLPhongHoc.Controllers
                 return Unauthorized(response);
             }
 
+            SaveSessionForLogin(response);
+            PersistAuthCookies(response, request.GhiNho);
+
             return Ok(response);
         }
 
@@ -121,6 +161,7 @@ namespace QLPhongHoc.Controllers
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
+            ClearAuthCookies();
             _logger.LogInformation("User logged out");
             return RedirectToAction("Login", "Account");
         }

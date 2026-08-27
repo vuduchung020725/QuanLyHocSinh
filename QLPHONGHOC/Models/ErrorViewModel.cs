@@ -1,4 +1,4 @@
-namespace QLPHONGHOC.Models
+namespace QLPhongHoc.Models
 {
     public class ErrorViewModel
     {

@@ -6,8 +6,8 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Đăng nhập vào hệ thống Quản lý Phòng Học" />
-    <title>Đăng nhập — Quản Lý Phòng Học</title>
+    <meta name="description" content="Đăng nhập vào hệ thống Quản Lý Học Sinh" />
+    <title>Đăng nhập — Quản Lý Học Sinh</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -19,30 +19,30 @@
     <div class="auth-brand-panel">
         <div class="brand-logo">
             <div class="brand-logo-icon">🏫</div>
-            <span class="brand-logo-text">QL Phòng Học</span>
+            <span class="brand-logo-text">QL Học Sinh</span>
         </div>
 
         <div class="brand-hero">
-            <h1>Quản lý phòng học<br />thông minh</h1>
-            <p>Hệ thống số hóa quản lý toàn bộ cơ sở vật chất phòng học, đặt lịch, theo dõi thiết bị và xử lý sự cố trong một nền tảng thống nhất.</p>
+            <h1>Quản lý học sinh<br />hiệu quả</h1>
+            <p>Hệ thống số hóa quản lý toàn bộ thông tin học sinh, giáo viên, lớp học, môn học và điểm số trong một nền tảng thống nhất.</p>
         </div>
 
         <div class="brand-features">
             <div class="brand-feature">
-                <div class="brand-feature-icon">📅</div>
-                <span class="brand-feature-text">Đặt lịch phòng học nhanh chóng</span>
+                <div class="brand-feature-icon">👥</div>
+                <span class="brand-feature-text">Quản lý học sinh & giáo viên</span>
             </div>
             <div class="brand-feature">
-                <div class="brand-feature-icon">🔧</div>
-                <span class="brand-feature-text">Theo dõi thiết bị & bảo trì tự động</span>
+                <div class="brand-feature-icon">📚</div>
+                <span class="brand-feature-text">Quản lý lớp & môn học</span>
             </div>
             <div class="brand-feature">
-                <div class="brand-feature-icon">📊</div>
-                <span class="brand-feature-text">Thống kê sử dụng chi tiết</span>
+                <div class="brand-feature-icon">📝</div>
+                <span class="brand-feature-text">Nhập & tra cứu điểm số</span>
             </div>
             <div class="brand-feature">
                 <div class="brand-feature-icon">🔒</div>
-                <span class="brand-feature-text">Bảo mật đa lớp với phân quyền</span>
+                <span class="brand-feature-text">Phân quyền ADMIN/GV/HS</span>
             </div>
         </div>
 
@@ -58,7 +58,7 @@
     <div class="auth-form-panel">
         <div class="auth-form-header">
             <h2>Chào mừng trở lại 👋</h2>
-            <p>Đăng nhập để truy cập hệ thống quản lý phòng học</p>
+            <p>Đăng nhập để truy cập hệ thống quản lý học sinh</p>
         </div>
 
         @if (ViewBag.Error != null)
@@ -78,6 +78,7 @@
         }
 
         <form asp-action="Login" method="post" class="auth-form" id="loginForm" novalidate data-loading>
+            @Html.AntiForgeryToken()
 
             <div class="form-group">
                 <label class="form-label" for="tenDangNhap">Tên đăng nhập</label>

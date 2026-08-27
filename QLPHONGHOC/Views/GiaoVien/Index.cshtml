@@ -1,0 +1,36 @@
+@model QLPhongHoc.Models.PagedResult<QLPhongHoc.Models.GiaoVienDto>
+@{
+    ViewData["Title"] = "Danh sách Giáo viên";
+}
+
+<h2>Danh sách Giáo viên</h2>
+<p><a class="btn btn-primary" href="@Url.Action("Create","GiaoVien")">+ Thêm giáo viên</a></p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Mã GV</th>
+            <th>Họ tên</th>
+            <th>Chuyên môn</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var it in Model.Items)
+    {
+        <tr>
+            <td>@it.MaGV</td>
+            <td>@it.HoTen</td>
+            <td>@it.ChuyenMon</td>
+            <td>
+                <a class="btn btn-sm btn-secondary" href="@Url.Action("Details","GiaoVien", new { id = it.MaGiaoVien })">Xem</a>
+                <a class="btn btn-sm btn-primary" href="@Url.Action("Edit","GiaoVien", new { id = it.MaGiaoVien })">Sửa</a>
+                <form method="post" action="@Url.Action("Delete","GiaoVien", new { id = it.MaGiaoVien })" style="display:inline;" onsubmit="return confirm('Xóa giáo viên?');">
+                    @Html.AntiForgeryToken()
+                    <button class="btn btn-sm btn-danger" type="submit">Xóa</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

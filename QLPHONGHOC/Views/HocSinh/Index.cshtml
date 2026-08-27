@@ -1,0 +1,43 @@
+@model QLPhongHoc.Models.PagedResult<QLPhongHoc.Models.HocSinhDto>
+@{
+    ViewData["Title"] = "Danh sách Học sinh";
+}
+
+<h2>Danh sách Học sinh</h2>
+
+<p>
+    <a class="btn btn-primary" href="@Url.Action("Create","HocSinh")">+ Thêm học sinh</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Mã HS</th>
+            <th>Họ tên</th>
+            <th>Ngày sinh</th>
+            <th>Giới tính</th>
+            <th>Lớp</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var it in Model.Items)
+    {
+        <tr>
+            <td>@it.MaHS</td>
+            <td>@it.HoTen</td>
+            <td>@it.NgaySinh.ToString()</td>
+            <td>@it.GioiTinh</td>
+            <td>@it.TenLop</td>
+            <td>
+                <a class="btn btn-sm btn-secondary" href="@Url.Action("Details","HocSinh", new { id = it.MaHocSinh })">Xem</a>
+                <a class="btn btn-sm btn-primary" href="@Url.Action("Edit","HocSinh", new { id = it.MaHocSinh })">Sửa</a>
+                <form method="post" action="@Url.Action("Delete","HocSinh", new { id = it.MaHocSinh })" style="display:inline;" onsubmit="return confirm('Xóa học sinh?');">
+                    @Html.AntiForgeryToken()
+                    <button class="btn btn-sm btn-danger" type="submit">Xóa</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

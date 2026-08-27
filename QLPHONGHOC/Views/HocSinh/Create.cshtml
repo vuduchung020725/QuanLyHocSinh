@@ -1,0 +1,38 @@
+@model QLPhongHoc.Models.CreateHocSinhRequest
+@{
+    ViewData["Title"] = "Thêm học sinh";
+    var lops = ViewData["Lops"] as List<QLPhongHoc.Models.LopDto> ?? new();
+}
+
+<h2>Thêm học sinh</h2>
+
+<form method="post" asp-action="Create">
+    <div class="mb-3">
+        <label class="form-label">Mã HS</label>
+        <input asp-for="MaHS" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Họ tên</label>
+        <input asp-for="HoTen" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Ngày sinh</label>
+        <input asp-for="NgaySinh" type="date" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Giới tính</label>
+        <input asp-for="GioiTinh" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Lớp</label>
+        <select asp-for="MaLop" class="form-control">
+            <option value="">-- Chọn lớp --</option>
+            @foreach(var l in lops)
+            {
+                <option value="@l.MaLop">@l.TenLop</option>
+            }
+        </select>
+    </div>
+    <button class="btn btn-primary" type="submit">Lưu</button>
+    <a class="btn btn-secondary" href="@Url.Action("Index","HocSinh")">Hủy</a>
+</form>

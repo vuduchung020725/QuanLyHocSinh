@@ -12,7 +12,7 @@ namespace QLPhongHoc.Controllers.Api
 {
     [ApiController]
     [Route("api/v1/accounts")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "ADMIN")]
     public class ApiAccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
@@ -40,7 +40,19 @@ namespace QLPhongHoc.Controllers.Api
                 if (page < 1) page = 1;
                 if (size < 1) size = 10;
 
-                var result = await _accountService.GetAccountsAsync(keyword, trangThai, maVaiTro, page, size);
+                bool? trangThaiBool = null;
+                if (!string.IsNullOrWhiteSpace(trangThai))
+                {
+                    if (bool.TryParse(trangThai, out var b)) trangThaiBool = b;
+                    else if (trangThai.Equals("1", StringComparison.Ordinal)) trangThaiBool = true;
+                    else if (trangThai.Equals("0", StringComparison.Ordinal)) trangThaiBool = false;
+                    else if (trangThai.Equals("hoatdong", StringComparison.OrdinalIgnoreCase) ||
+                             trangThai.Equals("active", StringComparison.OrdinalIgnoreCase)) trangThaiBool = true;
+                    else if (trangThai.Equals("khoa", StringComparison.OrdinalIgnoreCase) ||
+                             trangThai.Equals("locked", StringComparison.OrdinalIgnoreCase)) trangThaiBool = false;
+                }
+
+                var result = await _accountService.GetAccountsAsync(keyword, trangThaiBool, maVaiTro, page, size);
                 return Ok(result);
             }
             catch (Exception ex)

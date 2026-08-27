@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 namespace QLPhongHoc.Models
 {
     // ==========================================
-    // PAGINATION HELPER
+    // PAGINATION HELPER (GIỮ NGUYÊN)
     // ==========================================
     public class PagedResult<T>
     {
@@ -17,7 +17,7 @@ namespace QLPhongHoc.Models
     }
 
     // ==========================================
-    // MODULE 1: ACCOUNT DTOS
+    // MODULE 1: ACCOUNT DTOS (GIỮ NGUYÊN)
     // ==========================================
     public class AccountDto
     {
@@ -28,7 +28,7 @@ namespace QLPhongHoc.Models
         public string? SoDienThoai { get; set; }
         public int MaVaiTro { get; set; }
         public string TenVaiTro { get; set; } = string.Empty;
-        public string TrangThai { get; set; } = string.Empty;
+        public bool TrangThai { get; set; }
     }
 
     public class UpdateAccountRequest
@@ -48,272 +48,334 @@ namespace QLPhongHoc.Models
         [Required(ErrorMessage = "Vai trò là bắt buộc")]
         public int MaVaiTro { get; set; }
 
-        [Required(ErrorMessage = "Trạng thái là bắt buộc")]
-        [StringLength(30, ErrorMessage = "Trạng thái tối đa 30 ký tự")]
-        public string TrangThai { get; set; } = string.Empty; // 'Hoạt động', 'Khóa', etc.
+        public bool TrangThai { get; set; } = true;
     }
 
     public class ApproveAccountRequest
     {
         [Required(ErrorMessage = "Trạng thái duyệt là bắt buộc")]
-        [RegularExpression("^(Hoạt động|Từ chối)$", ErrorMessage = "Trạng thái duyệt phải là 'Hoạt động' hoặc 'Từ chối'")]
-        public string TrangThai { get; set; } = string.Empty;
+        public bool TrangThai { get; set; }
     }
 
     // ==========================================
-    // MODULE 2: PHONGHOC DTOS
+    // MODULE 2: GIAOVIEN DTOS
     // ==========================================
-    public class PhongHocDto
+    public class GiaoVienDto
     {
-        public int MaPhong { get; set; }
-        public string TenPhong { get; set; } = string.Empty;
-        public string DayNha { get; set; } = string.Empty;
-        public int Tang { get; set; }
-        public int SucChua { get; set; }
-        public string LoaiPhong { get; set; } = string.Empty;
-        public string TrangThai { get; set; } = string.Empty;
+        public int MaGiaoVien { get; set; }
+        public int? MaTaiKhoan { get; set; }
+        public string MaGV { get; set; } = string.Empty;
+        public string HoTen { get; set; } = string.Empty;
+        public DateOnly? NgaySinh { get; set; }
+        public string? GioiTinh { get; set; }
+        public string? SoDienThoai { get; set; }
+        public string? Email { get; set; }
+        public string? DiaChi { get; set; }
+        public string ChuyenMon { get; set; } = string.Empty;
+        public bool TrangThai { get; set; }
+    }
+
+    public class CreateGiaoVienRequest
+    {
+        [Required(ErrorMessage = "Mã giáo viên là bắt buộc")]
+        [StringLength(20, ErrorMessage = "Mã giáo viên tối đa 20 ký tự")]
+        public string MaGV { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Họ tên là bắt buộc")]
+        [StringLength(100, ErrorMessage = "Họ tên tối đa 100 ký tự")]
+        public string HoTen { get; set; } = string.Empty;
+
+        public DateOnly? NgaySinh { get; set; }
+
+        [StringLength(10)]
+        public string? GioiTinh { get; set; }
+
+        [StringLength(15, ErrorMessage = "Số điện thoại tối đa 15 ký tự")]
+        [RegularExpression(@"^[0-9\+\-\s]{7,15}$", ErrorMessage = "Số điện thoại không hợp lệ")]
+        public string? SoDienThoai { get; set; }
+
+        [EmailAddress(ErrorMessage = "Email không đúng định dạng")]
+        [StringLength(100)]
+        public string? Email { get; set; }
+
+        [StringLength(255)]
+        public string? DiaChi { get; set; }
+
+        [Required(ErrorMessage = "Chuyên môn là bắt buộc")]
+        [StringLength(100)]
+        public string ChuyenMon { get; set; } = string.Empty;
+
+        public bool TrangThai { get; set; } = true;
+
+        public int? MaTaiKhoan { get; set; }
+    }
+
+    public class UpdateGiaoVienRequest : CreateGiaoVienRequest { }
+
+    // ==========================================
+    // MODULE 3: HOCSINH DTOS
+    // ==========================================
+    public class HocSinhDto
+    {
+        public int MaHocSinh { get; set; }
+        public int? MaTaiKhoan { get; set; }
+        public string MaHS { get; set; } = string.Empty;
+        public string HoTen { get; set; } = string.Empty;
+        public DateOnly NgaySinh { get; set; }
+        public string GioiTinh { get; set; } = string.Empty;
+        public string? DiaChi { get; set; }
+        public string? SoDienThoai { get; set; }
+        public string? Email { get; set; }
+        public int MaLop { get; set; }
+        public string TenLop { get; set; } = string.Empty;
+        public bool TrangThai { get; set; }
+    }
+
+    public class CreateHocSinhRequest
+    {
+        [Required(ErrorMessage = "Mã học sinh là bắt buộc")]
+        [StringLength(20, ErrorMessage = "Mã học sinh tối đa 20 ký tự")]
+        public string MaHS { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Họ tên là bắt buộc")]
+        [StringLength(100, ErrorMessage = "Họ tên tối đa 100 ký tự")]
+        public string HoTen { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Ngày sinh là bắt buộc")]
+        public DateOnly NgaySinh { get; set; }
+
+        [Required(ErrorMessage = "Giới tính là bắt buộc")]
+        [StringLength(10)]
+        public string GioiTinh { get; set; } = string.Empty;
+
+        [StringLength(255)]
+        public string? DiaChi { get; set; }
+
+        [StringLength(15)]
+        [RegularExpression(@"^[0-9\+\-\s]{7,15}$", ErrorMessage = "Số điện thoại không hợp lệ")]
+        public string? SoDienThoai { get; set; }
+
+        [EmailAddress(ErrorMessage = "Email không đúng định dạng")]
+        [StringLength(100)]
+        public string? Email { get; set; }
+
+        [Required(ErrorMessage = "Lớp là bắt buộc")]
+        public int MaLop { get; set; }
+
+        public bool TrangThai { get; set; } = true;
+
+        public int? MaTaiKhoan { get; set; }
+    }
+
+    public class UpdateHocSinhRequest : CreateHocSinhRequest { }
+
+    // ==========================================
+    // MODULE 4: LOP DTOS
+    // ==========================================
+    public class LopDto
+    {
+        public int MaLop { get; set; }
+        public string MaLopCode { get; set; } = string.Empty;
+        public string TenLop { get; set; } = string.Empty;
+        public int Khoi { get; set; }
+        public int MaNamHoc { get; set; }
+        public string TenNamHoc { get; set; } = string.Empty;
+        public int? MaGVCN { get; set; }
+        public string? TenGVCN { get; set; }
+        public int SiSo { get; set; }
+        public bool TrangThai { get; set; }
+    }
+
+    public class CreateLopRequest
+    {
+        [Required(ErrorMessage = "Mã lớp là bắt buộc")]
+        [StringLength(20, ErrorMessage = "Mã lớp tối đa 20 ký tự")]
+        public string MaLopCode { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Tên lớp là bắt buộc")]
+        [StringLength(50)]
+        public string TenLop { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Khối là bắt buộc")]
+        public int Khoi { get; set; }
+
+        [Required(ErrorMessage = "Năm học là bắt buộc")]
+        public int MaNamHoc { get; set; }
+
+        public int? MaGVCN { get; set; }
+
+        public bool TrangThai { get; set; } = true;
+    }
+
+    public class UpdateLopRequest : CreateLopRequest { }
+
+    // ==========================================
+    // MODULE 5: MONHOC DTOS
+    // ==========================================
+    public class MonHocDto
+    {
+        public int MaMonHoc { get; set; }
+        public string MaMon { get; set; } = string.Empty;
+        public string TenMon { get; set; } = string.Empty;
+        public int SoTiet { get; set; }
         public string? GhiChu { get; set; }
     }
 
-    public class CreatePhongHocRequest
+    public class CreateMonHocRequest
     {
-        [Required(ErrorMessage = "Tên phòng là bắt buộc")]
-        [StringLength(50, ErrorMessage = "Tên phòng tối đa 50 ký tự")]
-        public string TenPhong { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Mã môn học là bắt buộc")]
+        [StringLength(20)]
+        public string MaMon { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Dãy nhà là bắt buộc")]
-        [StringLength(50, ErrorMessage = "Dãy nhà tối đa 50 ký tự")]
-        public string DayNha { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Tên môn học là bắt buộc")]
+        [StringLength(100)]
+        public string TenMon { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Tầng là bắt buộc")]
-        [Range(0, 50, ErrorMessage = "Tầng phải nằm trong khoảng 0 đến 50")]
-        public int Tang { get; set; }
+        [Range(0, 500, ErrorMessage = "Số tiết phải từ 0 đến 500")]
+        public int SoTiet { get; set; } = 0;
 
-        [Required(ErrorMessage = "Sức chứa là bắt buộc")]
-        [Range(1, 1000, ErrorMessage = "Sức chứa phải lớn hơn 0")]
-        public int SucChua { get; set; }
-
-        [Required(ErrorMessage = "Loại phòng là bắt buộc")]
-        [StringLength(50, ErrorMessage = "Loại phòng tối đa 50 ký tự")]
-        public string LoaiPhong { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Trạng thái là bắt buộc")]
-        [StringLength(50, ErrorMessage = "Trạng thái tối đa 50 ký tự")]
-        public string TrangThai { get; set; } = string.Empty; // 'Hoạt động', 'Cần sửa chữa', 'Trống', 'Bận'
-
-        [StringLength(255, ErrorMessage = "Ghi chú tối đa 255 ký tự")]
+        [StringLength(255)]
         public string? GhiChu { get; set; }
     }
 
-    public class UpdatePhongHocRequest : CreatePhongHocRequest
+    public class UpdateMonHocRequest : CreateMonHocRequest { }
+
+    // ==========================================
+    // MODULE 6: NAMHOC DTOS
+    // ==========================================
+    public class NamHocDto
     {
+        public int MaNamHoc { get; set; }
+        public string TenNamHoc { get; set; } = string.Empty;
+        public bool TrangThai { get; set; }
     }
 
     // ==========================================
-    // MODULE 3: THIETBI DTOS
+    // MODULE 7: HOCKY DTOS
     // ==========================================
-    public class ThietBiDto
+    public class HocKyDto
     {
-        public int MaThietBi { get; set; }
-        public string TenThietBi { get; set; } = string.Empty;
-        public int MaPhong { get; set; }
-        public string TenPhong { get; set; } = string.Empty;
-        public int SoLuong { get; set; }
-        public string TinhTrang { get; set; } = string.Empty;
-        public string? GhiChu { get; set; }
-    }
-
-    public class CreateThietBiRequest
-    {
-        [Required(ErrorMessage = "Tên thiết bị là bắt buộc")]
-        [StringLength(100, ErrorMessage = "Tên thiết bị tối đa 100 ký tự")]
-        public string TenThietBi { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Phòng thuộc về là bắt buộc")]
-        public int MaPhong { get; set; }
-
-        [Required(ErrorMessage = "Số lượng là bắt buộc")]
-        [Range(1, 1000, ErrorMessage = "Số lượng phải từ 1 đến 1000")]
-        public int SoLuong { get; set; }
-
-        [Required(ErrorMessage = "Tình trạng là bắt buộc")]
-        [StringLength(50, ErrorMessage = "Tình trạng tối đa 50 ký tự")]
-        public string TinhTrang { get; set; } = string.Empty; // 'Hoạt động', 'Cần sửa chữa', 'Hỏng', 'Ngừng sử dụng'
-
-        [StringLength(255, ErrorMessage = "Ghi chú tối đa 255 ký tự")]
-        public string? GhiChu { get; set; }
-    }
-
-    public class UpdateThietBiRequest : CreateThietBiRequest
-    {
+        public int MaHocKy { get; set; }
+        public string TenHocKy { get; set; } = string.Empty;
+        public int MaNamHoc { get; set; }
+        public string TenNamHoc { get; set; } = string.Empty;
+        public DateOnly TuNgay { get; set; }
+        public DateOnly DenNgay { get; set; }
     }
 
     // ==========================================
-    // MODULE 4: DANGKY DTOS
+    // MODULE 8: DIEM DTOS
     // ==========================================
-    public class DangKyDto
+    public class DiemDto
     {
-        public int MaYeuCau { get; set; }
-        public int MaGiangVien { get; set; }
-        public string TenGiangVien { get; set; } = string.Empty;
-        public int MaPhong { get; set; }
-        public string TenPhong { get; set; } = string.Empty;
-        public DateTime NgaySuDung { get; set; }
-        public int TietBatDau { get; set; }
-        public int TietKetThuc { get; set; }
-        public string? MucDich { get; set; }
-        public string TrangThai { get; set; } = string.Empty; // 'Chờ duyệt', 'Đã duyệt', 'Từ chối', 'Đã hủy'
-        public string? LyDoTuChoi { get; set; }
-        public DateTime NgayTao { get; set; }
+        public int MaDiem { get; set; }
+        public int MaHocSinh { get; set; }
+        public string MaHS { get; set; } = string.Empty;
+        public string TenHocSinh { get; set; } = string.Empty;
+        public string TenLop { get; set; } = string.Empty;
+        public int MaMonHoc { get; set; }
+        public string TenMon { get; set; } = string.Empty;
+        public int MaHocKy { get; set; }
+        public string TenHocKy { get; set; } = string.Empty;
+        public decimal? DiemMieng { get; set; }
+        public decimal? Diem15Phut { get; set; }
+        public decimal? DiemGiuaKy { get; set; }
+        public decimal? DiemCuoiKy { get; set; }
+        public decimal? DiemTrungBinh { get; set; }
+        public string? XepLoai { get; set; }
+        public DateTime NgayCapNhat { get; set; }
+        public string? TenGiaoVienNhap { get; set; }
     }
 
-    public class CreateDangKyRequest
+    public class NhapDiemRequest
     {
-        [Required(ErrorMessage = "Phòng học là bắt buộc")]
-        public int MaPhong { get; set; }
+        [Required(ErrorMessage = "Học sinh là bắt buộc")]
+        public int MaHocSinh { get; set; }
 
-        [Required(ErrorMessage = "Ngày sử dụng là bắt buộc")]
-        public DateTime NgaySuDung { get; set; }
+        [Required(ErrorMessage = "Môn học là bắt buộc")]
+        public int MaMonHoc { get; set; }
 
-        [Required(ErrorMessage = "Tiết bắt đầu là bắt buộc")]
-        [Range(1, 15, ErrorMessage = "Tiết bắt đầu phải từ 1 đến 15")]
-        public int TietBatDau { get; set; }
+        [Required(ErrorMessage = "Học kỳ là bắt buộc")]
+        public int MaHocKy { get; set; }
 
-        [Required(ErrorMessage = "Tiết kết thúc là bắt buộc")]
-        [Range(1, 15, ErrorMessage = "Tiết kết thúc phải từ 1 đến 15")]
-        public int TietKetThuc { get; set; }
+        [Range(0, 10, ErrorMessage = "Điểm miệng phải từ 0 đến 10")]
+        public decimal? DiemMieng { get; set; }
 
-        [StringLength(255, ErrorMessage = "Mục đích mượn tối đa 255 ký tự")]
-        public string? MucDich { get; set; }
+        [Range(0, 10, ErrorMessage = "Điểm 15 phút phải từ 0 đến 10")]
+        public decimal? Diem15Phut { get; set; }
+
+        [Range(0, 10, ErrorMessage = "Điểm giữa kỳ phải từ 0 đến 10")]
+        public decimal? DiemGiuaKy { get; set; }
+
+        [Range(0, 10, ErrorMessage = "Điểm cuối kỳ phải từ 0 đến 10")]
+        public decimal? DiemCuoiKy { get; set; }
     }
 
-    public class ApproveDangKyRequest
+    // Dùng khi nhập điểm hàng loạt cho một lớp
+    public class NhapDiemHangLoatRequest
     {
-        [Required(ErrorMessage = "Quyết định phê duyệt là bắt buộc")]
-        [RegularExpression("^(Đã duyệt|Từ chối)$", ErrorMessage = "Chỉ có thể chọn 'Đã duyệt' hoặc 'Từ chối'")]
-        public string TrangThai { get; set; } = string.Empty;
-
-        [StringLength(255, ErrorMessage = "Lý do từ chối tối đa 255 ký tự")]
-        public string? LyDoTuChoi { get; set; }
-    }
-
-    // ==========================================
-    // MODULE 5: SUCO DTOS
-    // ==========================================
-    public class SuCoDto
-    {
-        public int MaSuCo { get; set; }
-        public int MaPhong { get; set; }
-        public string TenPhong { get; set; } = string.Empty;
-        public int? MaThietBi { get; set; }
-        public string? TenThietBi { get; set; }
-        public int NguoiBaoCao { get; set; }
-        public string TenNguoiBaoCao { get; set; } = string.Empty;
-        public string MoTaSuCo { get; set; } = string.Empty;
-        public DateTime NgayBaoCao { get; set; }
-        public string TrangThai { get; set; } = string.Empty; // 'Chờ xử lý', 'Đang xử lý', 'Đã khắc phục', 'Không khắc phục được'
-    }
-
-    public class CreateSuCoRequest
-    {
-        [Required(ErrorMessage = "Mã phòng học là bắt buộc")]
-        public int MaPhong { get; set; }
-
-        public int? MaThietBi { get; set; }
-
-        [Required(ErrorMessage = "Mô tả sự cố là bắt buộc")]
-        [StringLength(255, ErrorMessage = "Mô tả tối đa 255 ký tự")]
-        public string MoTaSuCo { get; set; } = string.Empty;
-    }
-
-    public class UpdateSuCoStatusRequest
-    {
-        [Required(ErrorMessage = "Trạng thái sự cố là bắt buộc")]
-        [RegularExpression("^(Chờ xử lý|Đang xử lý|Đã khắc phục|Không khắc phục được)$", ErrorMessage = "Trạng thái không hợp lệ")]
-        public string TrangThai { get; set; } = string.Empty;
+        [Required]
+        public int MaMonHoc { get; set; }
+        [Required]
+        public int MaHocKy { get; set; }
+        [Required]
+        public int MaLop { get; set; }
+        public List<NhapDiemRequest> DanhSachDiem { get; set; } = new();
     }
 
     // ==========================================
-    // MODULE 6: BAOTRI DTOS
+    // MODULE 9: BAOCAO (Dashboard + Thống kê)
     // ==========================================
-    public class BaoTriDto
-    {
-        public int MaBaoTri { get; set; }
-        public int MaSuCo { get; set; }
-        public string MoTaSuCo { get; set; } = string.Empty;
-        public string TenPhong { get; set; } = string.Empty;
-        public string? TenThietBi { get; set; }
-        public int MaKyThuatVien { get; set; }
-        public string TenKyThuatVien { get; set; } = string.Empty;
-        public DateTime NgayXuLy { get; set; }
-        public string NoiDungXuLy { get; set; } = string.Empty;
-        public string KetQua { get; set; } = string.Empty; // 'Thành công', 'Thất bại', 'Đang sửa'
-    }
-
-    public class CreateBaoTriRequest
-    {
-        [Required(ErrorMessage = "Mã sự cố liên quan là bắt buộc")]
-        public int MaSuCo { get; set; }
-
-        [Required(ErrorMessage = "Mã kỹ thuật viên phụ trách là bắt buộc")]
-        public int MaKyThuatVien { get; set; }
-
-        [Required(ErrorMessage = "Nội dung xử lý ban đầu là bắt buộc")]
-        [StringLength(255, ErrorMessage = "Nội dung tối đa 255 ký tự")]
-        public string NoiDungXuLy { get; set; } = string.Empty;
-    }
-
-    public class UpdateBaoTriRequest
-    {
-        [Required(ErrorMessage = "Nội dung xử lý/cập nhật là bắt buộc")]
-        [StringLength(255, ErrorMessage = "Nội dung tối đa 255 ký tự")]
-        public string NoiDungXuLy { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Kết quả bảo trì là bắt buộc")]
-        [RegularExpression("^(Thành công|Thất bại|Đang sửa)$", ErrorMessage = "Kết quả không hợp lệ")]
-        public string KetQua { get; set; } = string.Empty;
-    }
-
-    // ==========================================
-    // MODULE 7: THONGKE DTOS
-    // ==========================================
-    public class LichSuDungPhongDto
-    {
-        public int MaLich { get; set; }
-        public int MaPhong { get; set; }
-        public string TenPhong { get; set; } = string.Empty;
-        public int MaGiangVien { get; set; }
-        public string TenGiangVien { get; set; } = string.Empty;
-        public int? MaYeuCau { get; set; }
-        public DateTime NgaySuDung { get; set; }
-        public int TietBatDau { get; set; }
-        public int TietKetThuc { get; set; }
-        public string? NoiDung { get; set; }
-        public string TrangThai { get; set; } = string.Empty;
-    }
-
-    public class RoomUsageStatsDto
-    {
-        public int MaPhong { get; set; }
-        public string TenPhong { get; set; } = string.Empty;
-        public int SoLanSuDung { get; set; }
-        public int TongSoTiet { get; set; }
-    }
-
-    public class IncidentStatsDto
-    {
-        public int MaPhong { get; set; }
-        public string TenPhong { get; set; } = string.Empty;
-        public int SoVuSuCo { get; set; }
-        public int SoVuChuaXuLy { get; set; }
-        public int SoVuDaKhacPhuc { get; set; }
-    }
-
     public class DashboardSummaryDto
     {
-        public int TongSoPhong { get; set; }
-        public int TongSoThietBi { get; set; }
-        public int SoSuCoChuaXuLy { get; set; }
-        public int YeuCauChoDuyet { get; set; }
+        public int TongSoHocSinh { get; set; }
+        public int TongSoGiaoVien { get; set; }
+        public int TongSoLop { get; set; }
+        public int TongSoMonHoc { get; set; }
+        public string? TenNamHocHienTai { get; set; }
+        public string? TenHocKyHienTai { get; set; }
+        public DateTime ThoiGianCapNhat { get; set; }
+    }
+
+    public class HocLucThongKeDto
+    {
+        public string XepLoai { get; set; } = string.Empty;
+        public int SoLuong { get; set; }
+        public double TyLe { get; set; }
+    }
+
+    public class HocSinhKetQuaDto
+    {
+        public int MaHocSinh { get; set; }
+        public string MaHS { get; set; } = string.Empty;
+        public string HoTen { get; set; } = string.Empty;
+        public string TenLop { get; set; } = string.Empty;
+        public decimal? DiemTrungBinhChung { get; set; }   // TBChung = Trung bình các môn
+        public string? XepLoaiChung { get; set; }
+        public int SoMonHoc { get; set; }
+        public int SoMonDaNhap { get; set; }
+    }
+
+    public class PhanCongDto
+    {
+        public int MaPhanCong { get; set; }
+        public int MaGiaoVien { get; set; }
+        public string TenGiaoVien { get; set; } = string.Empty;
+        public int MaMonHoc { get; set; }
+        public string TenMon { get; set; } = string.Empty;
+        public int MaLop { get; set; }
+        public string TenLop { get; set; } = string.Empty;
+        public int MaNamHoc { get; set; }
+        public string TenNamHoc { get; set; } = string.Empty;
+        public int HocKy { get; set; } // 1, 2, 3
+    }
+
+    public class CreatePhanCongRequest
+    {
+        [Required] public int MaGiaoVien { get; set; }
+        [Required] public int MaMonHoc { get; set; }
+        [Required] public int MaLop { get; set; }
+        [Required] public int MaNamHoc { get; set; }
+        [Required] public int HocKy { get; set; } // 1, 2, 3
     }
 }

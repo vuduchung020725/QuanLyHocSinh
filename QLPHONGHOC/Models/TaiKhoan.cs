@@ -28,7 +28,8 @@ namespace QLPhongHoc.Models
         [ForeignKey("MaVaiTro")]
         public VaiTro VaiTro { get; set; } = null!;
 
-        [StringLength(30)]
-        public string TrangThai { get; set; } = string.Empty;
+        public bool TrangThai { get; set; } = true;
+
+        public DateTime NgayTao { get; set; } = DateTime.Now;
     }
 }

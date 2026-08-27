@@ -1,0 +1,24 @@
+@model QLPhongHoc.Models.UpdateGiaoVienRequest
+@{
+    ViewData["Title"] = "Sửa giáo viên";
+    var id = ViewData["MaGiaoVien"] as int? ?? 0;
+}
+
+<h2>Sửa giáo viên</h2>
+
+<form method="post" asp-action="Edit" asp-route-id="@id">
+    <div class="mb-3">
+        <label class="form-label">Mã GV</label>
+        <input asp-for="MaGV" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Họ tên</label>
+        <input asp-for="HoTen" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Chuyên môn</label>
+        <input asp-for="ChuyenMon" class="form-control" />
+    </div>
+    <button class="btn btn-primary" type="submit">Lưu</button>
+    <a class="btn btn-secondary" href="@Url.Action("Index","GiaoVien")">Hủy</a>
+</form>

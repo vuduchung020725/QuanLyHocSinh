@@ -10,11 +10,11 @@ namespace QLPhongHoc.Services
 {
     public interface IAccountService
     {
-        Task<PagedResult<AccountDto>> GetAccountsAsync(string? keyword, string? trangThai, int? maVaiTro, int pageNumber, int pageSize);
+        Task<PagedResult<AccountDto>> GetAccountsAsync(string? keyword, bool? trangThai, int? maVaiTro, int pageNumber, int pageSize);
         Task<AccountDto?> GetAccountByIdAsync(int id);
         Task<AccountDto?> UpdateAccountAsync(int id, UpdateAccountRequest request);
         Task<bool> ApproveAccountAsync(int id, ApproveAccountRequest request);
-        Task<bool> DeleteAccountAsync(int id); // Xóa mềm: đổi trạng thái thành Khóa hoặc xóa cứng
+        Task<bool> DeleteAccountAsync(int id); // Xóa mềm: đổi trạng thái thành false hoặc xóa cứng
     }
 
     public class AccountService : IAccountService
@@ -28,7 +28,7 @@ namespace QLPhongHoc.Services
             _logger = logger;
         }
 
-        public async Task<PagedResult<AccountDto>> GetAccountsAsync(string? keyword, string? trangThai, int? maVaiTro, int pageNumber, int pageSize)
+        public async Task<PagedResult<AccountDto>> GetAccountsAsync(string? keyword, bool? trangThai, int? maVaiTro, int pageNumber, int pageSize)
         {
             try
             {
@@ -43,9 +43,9 @@ namespace QLPhongHoc.Services
                                              (t.SoDienThoai != null && t.SoDienThoai.Contains(kw)));
                 }
 
-                if (!string.IsNullOrWhiteSpace(trangThai))
+                if (trangThai.HasValue)
                 {
-                    query = query.Where(t => t.TrangThai == trangThai);
+                    query = query.Where(t => t.TrangThai == trangThai.Value);
                 }
 
                 if (maVaiTro.HasValue)
@@ -158,9 +158,9 @@ namespace QLPhongHoc.Services
                 var user = await _context.TAIKHOAN.FindAsync(id);
                 if (user == null) return false;
 
-                if (user.TrangThai != "Chờ duyệt")
+                if (user.TrangThai)
                 {
-                    throw new InvalidOperationException("Chỉ có thể duyệt tài khoản ở trạng thái 'Chờ duyệt'.");
+                    throw new InvalidOperationException("Tài khoản đã được duyệt hoặc đang hoạt động.");
                 }
 
                 user.TrangThai = request.TrangThai;
@@ -185,14 +185,13 @@ namespace QLPhongHoc.Services
                 if (user == null) return false;
 
                 // Để an toàn, chúng ta thực hiện khóa thay vì xóa cứng nếu tài khoản đã có dữ liệu liên quan
-                var hasBookings = await _context.YEUCAUSUDUNGPHONG.AnyAsync(y => y.MaGiangVien == id);
-                var hasReports = await _context.SUCO.AnyAsync(s => s.NguoiBaoCao == id);
-                var hasMaintenance = await _context.BAOTRI.AnyAsync(b => b.MaKyThuatVien == id);
+                var hasHocSinh = await _context.HOCSINH.AnyAsync(y => y.MaTaiKhoan == id);
+                var hasGiaoVien = await _context.GIAOVIEN.AnyAsync(s => s.MaTaiKhoan == id);
 
-                if (hasBookings || hasReports || hasMaintenance)
+                if (hasHocSinh || hasGiaoVien)
                 {
                     // Chuyển sang Khóa (Soft delete/Deactivate)
-                    user.TrangThai = "Khóa";
+                    user.TrangThai = false;
                     _context.TAIKHOAN.Update(user);
                     _logger.LogInformation($"Tài khoản {user.TenDangNhap} có liên quan dữ liệu khác, chuyển trạng thái thành Khóa.");
                 }

@@ -1,0 +1,40 @@
+@model List<QLPhongHoc.Models.LopDto>
+@{
+    ViewData["Title"] = "Danh sách Lớp";
+}
+
+<h2>Danh sách Lớp</h2>
+<p><a class="btn btn-primary" href="@Url.Action("Create","Lop")">+ Thêm lớp</a></p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Mã lớp</th>
+            <th>Tên lớp</th>
+            <th>Khối</th>
+            <th>Giáo viên CN</th>
+            <th>Si Số</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var it in Model)
+    {
+        <tr>
+            <td>@it.MaLopCode</td>
+            <td>@it.TenLop</td>
+            <td>@it.Khoi</td>
+            <td>@it.TenGVCN</td>
+            <td>@it.SiSo</td>
+            <td>
+                <a class="btn btn-sm btn-secondary" href="@Url.Action("Details","Lop", new { id = it.MaLop })">Xem</a>
+                <a class="btn btn-sm btn-primary" href="@Url.Action("Edit","Lop", new { id = it.MaLop })">Sửa</a>
+                <form method="post" action="@Url.Action("Delete","Lop", new { id = it.MaLop })" style="display:inline;" onsubmit="return confirm('Xóa lớp?');">
+                    @Html.AntiForgeryToken()
+                    <button class="btn btn-sm btn-danger" type="submit">Xóa</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

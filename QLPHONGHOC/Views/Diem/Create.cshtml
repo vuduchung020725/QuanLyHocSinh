@@ -1,0 +1,39 @@
+@model QLPhongHoc.Models.NhapDiemRequest
+@{
+    ViewData["Title"] = "Nhập điểm";
+    var hocs = ViewData["HocSinhs"] as QLPhongHoc.Models.PagedResult<QLPhongHoc.Models.HocSinhDto> ?? new();
+    var monhocs = ViewData["MonHocs"] as List<QLPhongHoc.Models.MonHocDto> ?? new();
+    var hockys = ViewData["HocKys"] as List<QLPhongHoc.Models.HocKyDto> ?? new();
+}
+
+<h2>Nhập điểm</h2>
+
+<form method="post" asp-action="Create">
+    <div class="mb-3">
+        <label class="form-label">Học sinh</label>
+        <select asp-for="MaHocSinh" class="form-control">
+            <option value="">-- Chọn học sinh --</option>
+            @foreach(var h in hocs.Items) { <option value="@h.MaHocSinh">@h.HoTen (@h.MaHS)</option> }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Môn học</label>
+        <select asp-for="MaMonHoc" class="form-control">
+            <option value="">-- Chọn môn --</option>
+            @foreach(var m in monhocs) { <option value="@m.MaMonHoc">@m.TenMon</option> }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Học kỳ</label>
+        <select asp-for="MaHocKy" class="form-control">
+            <option value="">-- Chọn học kỳ --</option>
+            @foreach(var k in hockys) { <option value="@k.MaHocKy">@k.TenHocKy</option> }
+        </select>
+    </div>
+    <div class="mb-3"><label class="form-label">Điểm miệng</label><input asp-for="DiemMieng" class="form-control" /></div>
+    <div class="mb-3"><label class="form-label">Điểm 15 phút</label><input asp-for="Diem15Phut" class="form-control" /></div>
+    <div class="mb-3"><label class="form-label">Điểm giữa kỳ</label><input asp-for="DiemGiuaKy" class="form-control" /></div>
+    <div class="mb-3"><label class="form-label">Điểm cuối kỳ</label><input asp-for="DiemCuoiKy" class="form-control" /></div>
+    <button class="btn btn-primary" type="submit">Lưu</button>
+    <a class="btn btn-secondary" href="@Url.Action("Index","Diem")">Hủy</a>
+</form>
