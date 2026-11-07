@@ -20,7 +20,7 @@ namespace QLPhongHoc.Services
         /// <summary>
         /// Verify JWT Token
         /// </summary>
-        ClaimsPrincipal ValidateToken(string token);
+        ClaimsPrincipal? ValidateToken(string token);
     }
 
     public class TokenService : ITokenService
@@ -39,7 +39,7 @@ namespace QLPhongHoc.Services
             try
             {
                 var jwtSettings = _configuration.GetSection("JwtSettings");
-                var secretKey = jwtSettings.GetValue<string>("SecretKey");
+                var secretKey = jwtSettings.GetValue<string>("SecretKey") ?? "QLHocSinh-SecretKey-MustBe-AtLeast-32-Characters-Long-For-Security!";
                 var issuer = jwtSettings.GetValue<string>("Issuer");
                 var audience = jwtSettings.GetValue<string>("Audience");
                 var expiryMinutes = jwtSettings.GetValue<int>("ExpiryMinutes", 60);
@@ -78,12 +78,12 @@ namespace QLPhongHoc.Services
             }
         }
 
-        public ClaimsPrincipal ValidateToken(string token)
+        public ClaimsPrincipal? ValidateToken(string token)
         {
             try
             {
                 var jwtSettings = _configuration.GetSection("JwtSettings");
-                var secretKey = jwtSettings.GetValue<string>("SecretKey");
+                var secretKey = jwtSettings.GetValue<string>("SecretKey") ?? "QLHocSinh-SecretKey-MustBe-AtLeast-32-Characters-Long-For-Security!";
                 var issuer = jwtSettings.GetValue<string>("Issuer");
                 var audience = jwtSettings.GetValue<string>("Audience");
 

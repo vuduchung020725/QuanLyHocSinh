@@ -45,6 +45,5 @@ namespace QLPhongHoc.Models
         // Navigation
         public ICollection<Lop> LopChuNhiem { get; set; } = new List<Lop>();
         public ICollection<PhanCong> PhanCongs { get; set; } = new List<PhanCong>();
-        public ICollection<Diem> DiemsNhap { get; set; } = new List<Diem>();
     }
 }

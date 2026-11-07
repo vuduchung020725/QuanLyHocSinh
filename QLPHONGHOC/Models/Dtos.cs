@@ -29,6 +29,7 @@ namespace QLPhongHoc.Models
         public int MaVaiTro { get; set; }
         public string TenVaiTro { get; set; } = string.Empty;
         public bool TrangThai { get; set; }
+        public DateTime NgayTao { get; set; } = DateTime.Now;
     }
 
     public class UpdateAccountRequest
@@ -126,6 +127,8 @@ namespace QLPhongHoc.Models
         public string? DiaChi { get; set; }
         public string? SoDienThoai { get; set; }
         public string? Email { get; set; }
+        public string? TenPhuHuynh { get; set; }
+        public string? SdtPhuHuynh { get; set; }
         public int MaLop { get; set; }
         public string TenLop { get; set; } = string.Empty;
         public bool TrangThai { get; set; }
@@ -159,6 +162,13 @@ namespace QLPhongHoc.Models
         [StringLength(100)]
         public string? Email { get; set; }
 
+        [StringLength(100, ErrorMessage = "Tên phụ huynh tối đa 100 ký tự")]
+        public string? TenPhuHuynh { get; set; }
+
+        [StringLength(15)]
+        [RegularExpression(@"^[0-9\+\-\s]{7,15}$", ErrorMessage = "Số điện thoại phụ huynh không hợp lệ")]
+        public string? SdtPhuHuynh { get; set; }
+
         [Required(ErrorMessage = "Lớp là bắt buộc")]
         public int MaLop { get; set; }
 
@@ -168,6 +178,36 @@ namespace QLPhongHoc.Models
     }
 
     public class UpdateHocSinhRequest : CreateHocSinhRequest { }
+
+    // ==========================================
+    // MODULE: ZALO ZNS DTOS
+    // ==========================================
+    public class SendZaloNotificationRequest
+    {
+        [Required(ErrorMessage = "Mã học sinh là bắt buộc")]
+        public int MaHocSinh { get; set; }
+
+        [Required(ErrorMessage = "Loại tin nhắn là bắt buộc")]
+        public string LoaiTinNhan { get; set; } = "Bảng điểm"; // "Bảng điểm", "Điểm danh vắng mặt", "Nhận xét"
+
+        public string? NoiDungTuyBien { get; set; }
+        public int? MaHocKy { get; set; }
+    }
+
+    public class LichSuZaloDto
+    {
+        public int MaLichSuZalo { get; set; }
+        public int MaHocSinh { get; set; }
+        public string TenHocSinh { get; set; } = string.Empty;
+        public string MaHS { get; set; } = string.Empty;
+        public string TenLop { get; set; } = string.Empty;
+        public string SoDienThoaiNhan { get; set; } = string.Empty;
+        public string LoaiTinNhan { get; set; } = string.Empty;
+        public string NoiDungGui { get; set; } = string.Empty;
+        public string TrangThai { get; set; } = string.Empty;
+        public string? MessageIdZalo { get; set; }
+        public DateTime ThoiGianGui { get; set; }
+    }
 
     // ==========================================
     // MODULE 4: LOP DTOS
@@ -377,5 +417,45 @@ namespace QLPhongHoc.Models
         [Required] public int MaLop { get; set; }
         [Required] public int MaNamHoc { get; set; }
         [Required] public int HocKy { get; set; } // 1, 2, 3
+    }
+
+    // DTO cho Dashboard Charts (Giai đoạn 4)
+    public class DashboardChartsDto
+    {
+        /// <summary>Dữ liệu Doughnut chart xếp loại học lực</summary>
+        public XepLoaiChartDto XepLoaiHocLuc { get; set; } = new();
+
+        /// <summary>Dữ liệu Bar chart sĩ số theo khối</summary>
+        public SiSoKhoiChartDto SiSoTheoKhoi { get; set; } = new();
+
+        /// <summary>Số tài khoản chờ phê duyệt</summary>
+        public int TaiKhoanChoDuyet { get; set; }
+
+        /// <summary>5 bản ghi điểm cập nhật gần nhất</summary>
+        public List<HoatDongGanDayDto> HoatDongGanDay { get; set; } = new();
+    }
+
+    public class XepLoaiChartDto
+    {
+        public int Gioi { get; set; }      // ≥ 8.5
+        public int Kha { get; set; }       // 7.0 – 8.49
+        public int TrungBinh { get; set; } // 5.0 – 6.99
+        public int Yeu { get; set; }       // < 5.0
+    }
+
+    public class SiSoKhoiChartDto
+    {
+        public int Khoi10 { get; set; }
+        public int Khoi11 { get; set; }
+        public int Khoi12 { get; set; }
+    }
+
+    public class HoatDongGanDayDto
+    {
+        public string TenHocSinh { get; set; } = string.Empty;
+        public string TenMonHoc { get; set; } = string.Empty;
+        public string TenLop { get; set; } = string.Empty;
+        public decimal? DiemTrungBinh { get; set; }
+        public DateTime NgayCapNhat { get; set; }
     }
 }

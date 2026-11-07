@@ -14,19 +14,20 @@ namespace QLPhongHoc.Data
         }
 
         // ===== GIỮ NGUYÊN: Tài khoản & Phân quyền =====
-        public DbSet<VaiTro>   VAITRO   { get; set; }
+        public DbSet<VaiTro> VAITRO { get; set; }
         public DbSet<TaiKhoan> TAIKHOAN { get; set; }
 
-        // ===== MỚI: Hệ thống Quản lý Học sinh =====
-        public DbSet<NamHoc>   NAMHOC   { get; set; }
-        public DbSet<HocKy>    HOCKY    { get; set; }
+        // ===== MỚI: Hệ thống Quản lý Học sinh ===== 
+        public DbSet<NamHoc> NAMHOC { get; set; }
+        public DbSet<HocKy> HOCKY { get; set; }
         public DbSet<GiaoVien> GIAOVIEN { get; set; }
-        public DbSet<Lop>      LOP      { get; set; }
-        public DbSet<HocSinh>  HOCSINH  { get; set; }
-        public DbSet<MonHoc>   MONHOC   { get; set; }
+        public DbSet<Lop> LOP { get; set; }
+        public DbSet<HocSinh> HOCSINH { get; set; }
+        public DbSet<MonHoc> MONHOC { get; set; }
         public DbSet<PhanCong> PHANCONG { get; set; }
-        public DbSet<Diem>     DIEM     { get; set; }
+        public DbSet<Diem> DIEM { get; set; }
         public DbSet<ThongBao> THONGBAO { get; set; }
+        public DbSet<LichSuZalo> LICHSUZALO { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -184,6 +185,16 @@ namespace QLPhongHoc.Data
                 .WithMany()
                 .HasForeignKey(t => t.MaTaiKhoan)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            // ==========================================
+            // LICHSUZALO
+            // ==========================================
+            modelBuilder.Entity<LichSuZalo>()
+                .ToTable("LICHSUZALO")
+                .HasOne(z => z.HocSinh)
+                .WithMany(h => h.LichSuZalos)
+                .HasForeignKey(z => z.MaHocSinh)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

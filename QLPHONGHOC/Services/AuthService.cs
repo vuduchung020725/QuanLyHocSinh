@@ -127,7 +127,7 @@ namespace QLPhongHoc.Services
                         Email = user.Email,
                         SoDienThoai = user.SoDienThoai,
                         MaVaiTro = user.MaVaiTro,
-                        TenVaiTro = user.VaiTro?.TenVaiTro,
+                        TenVaiTro = user.VaiTro?.TenVaiTro ?? string.Empty,
                         TrangThai = user.TrangThai ? "Hoạt động" : "Khóa"
                     }
                 };

@@ -56,6 +56,8 @@ namespace QLPhongHoc.Controllers
                 DiaChi = dto.DiaChi,
                 SoDienThoai = dto.SoDienThoai,
                 Email = dto.Email,
+                TenPhuHuynh = dto.TenPhuHuynh,
+                SdtPhuHuynh = dto.SdtPhuHuynh,
                 MaLop = dto.MaLop,
                 TrangThai = dto.TrangThai,
                 MaTaiKhoan = dto.MaTaiKhoan

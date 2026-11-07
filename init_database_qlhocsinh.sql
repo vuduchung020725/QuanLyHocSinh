@@ -16,6 +16,7 @@ USE QuanLyHocSinhDB;
 GO
 
 -- 2. Xóa các bảng cũ theo thứ tự đảo ngược (tránh lỗi FK)
+IF OBJECT_ID('dbo.LICHSUZALO', 'U') IS NOT NULL DROP TABLE dbo.LICHSUZALO;
 IF OBJECT_ID('dbo.THONGBAO',  'U') IS NOT NULL DROP TABLE dbo.THONGBAO;
 IF OBJECT_ID('dbo.DIEM',      'U') IS NOT NULL DROP TABLE dbo.DIEM;
 IF OBJECT_ID('dbo.PHANCONG',  'U') IS NOT NULL DROP TABLE dbo.PHANCONG;
@@ -139,6 +140,8 @@ CREATE TABLE HOCSINH (
     DiaChi        NVARCHAR(255) NULL,
     SoDienThoai   NVARCHAR(15)  NULL,
     Email         NVARCHAR(100) NULL,
+    TenPhuHuynh   NVARCHAR(100) NULL,
+    SdtPhuHuynh   VARCHAR(15)   NULL,
     MaLop         INT           NOT NULL,
     NgayNhapHoc   DATE          NULL,
     TrangThai     BIT           NOT NULL DEFAULT 1,
@@ -218,6 +221,22 @@ CREATE TABLE THONGBAO (
     NgayDang    DATETIME      NOT NULL DEFAULT GETDATE(),
     TrangThai   BIT           NOT NULL DEFAULT 1,
     CONSTRAINT FK_THONGBAO_TAIKHOAN FOREIGN KEY (MaTaiKhoan) REFERENCES TAIKHOAN(MaTaiKhoan) ON DELETE SET NULL
+);
+GO
+
+-- ============================================================
+-- 14. BẢNG LICHSUZALO (Model: LichSuZalo.cs) - Quản lý gửi ZNS Phụ huynh
+-- ============================================================
+CREATE TABLE LICHSUZALO (
+    MaLichSuZalo    INT           IDENTITY(1,1) PRIMARY KEY,
+    MaHocSinh       INT           NOT NULL,
+    SoDienThoaiNhan VARCHAR(15)   NOT NULL,
+    LoaiTinNhan     NVARCHAR(50)  NOT NULL,
+    NoiDungGui      NVARCHAR(MAX) NOT NULL,
+    TrangThai       NVARCHAR(50)  NOT NULL DEFAULT N'Thành công',
+    MessageIdZalo   VARCHAR(100)  NULL,
+    ThoiGianGui     DATETIME      NOT NULL DEFAULT GETDATE(),
+    CONSTRAINT FK_LICHSUZALO_HOCSINH FOREIGN KEY (MaHocSinh) REFERENCES HOCSINH(MaHocSinh) ON DELETE CASCADE
 );
 GO
 
@@ -311,17 +330,17 @@ GO
 
 -- Seed Học Sinh (MaTaiKhoan: hs_001=5, hs_002=6, hs_003=7; MaLop: 1-5)
 SET IDENTITY_INSERT HOCSINH ON;
-INSERT INTO HOCSINH (MaHocSinh, MaTaiKhoan, MaHocSinhCode, HoTen, NgaySinh, GioiTinh, DiaChi, SoDienThoai, Email, MaLop, NgayNhapHoc, TrangThai) VALUES
-(1, 5,    N'HS001', N'Phạm Thị Dung',    '2009-04-12', N'Nữ',  N'12 Lý Thường Kiệt, HN', '0912345001', N'ptdung@student.edu.vn',    1, '2024-09-05', 1),
-(2, 6,    N'HS002', N'Hoàng Văn Em',     '2009-08-25', N'Nam', N'34 Hai Bà Trưng, HN',   '0912345002', N'hvem@student.edu.vn',      1, '2024-09-05', 1),
-(3, 7,    N'HS003', N'Vũ Thị Phương',    '2009-01-30', N'Nữ',  N'56 Ngô Quyền, HN',      '0912345003', N'vtphuong@student.edu.vn',  1, '2024-09-05', 1),
-(4, 9,    N'HS004', N'Đinh Quang Hải',   '2009-06-14', N'Nam', N'78 Tràng Thi, HN',      '0912345004', N'student@qlhocsinh.edu.vn', 1, '2024-09-05', 1),
-(5, NULL, N'HS005', N'Ngô Thị Lan',      '2009-09-05', N'Nữ',  N'90 Hàng Bông, HN',      '0912345005', NULL,                        2, '2024-09-05', 1),
-(6, NULL, N'HS006', N'Bùi Văn Minh',     '2008-03-18', N'Nam', N'23 Hàng Gai, HN',       '0912345006', NULL,                        3, '2023-09-01', 1),
-(7, NULL, N'HS007', N'Đỗ Thị Nga',       '2008-11-22', N'Nữ',  N'45 Hàng Đào, HN',       '0912345007', NULL,                        3, '2023-09-01', 1),
-(8, NULL, N'HS008', N'Lý Văn Oanh',      '2008-07-08', N'Nam', N'67 Hàng Ngang, HN',     '0912345008', NULL,                        4, '2023-09-01', 1),
-(9, NULL, N'HS009', N'Mai Thị Phượng',   '2007-05-15', N'Nữ',  N'89 Đinh Lễ, HN',        '0912345009', NULL,                        5, '2022-08-25', 1),
-(10,NULL, N'HS010', N'Trịnh Văn Quân',   '2007-12-20', N'Nam', N'11 Lê Thái Tổ, HN',     '0912345010', NULL,                        5, '2022-08-25', 1);
+INSERT INTO HOCSINH (MaHocSinh, MaTaiKhoan, MaHocSinhCode, HoTen, NgaySinh, GioiTinh, DiaChi, SoDienThoai, Email, TenPhuHuynh, SdtPhuHuynh, MaLop, NgayNhapHoc, TrangThai) VALUES
+(1, 5,    N'HS001', N'Phạm Thị Dung',    '2009-04-12', N'Nữ',  N'12 Lý Thường Kiệt, HN', '0912345001', N'ptdung@student.edu.vn',    N'Phạm Văn Hùng', '0981110001', 1, '2024-09-05', 1),
+(2, 6,    N'HS002', N'Hoàng Văn Em',     '2009-08-25', N'Nam', N'34 Hai Bà Trưng, HN',   '0912345002', N'hvem@student.edu.vn',      N'Hoàng Thị Lan', '0981110002', 1, '2024-09-05', 1),
+(3, 7,    N'HS003', N'Vũ Thị Phương',    '2009-01-30', N'Nữ',  N'56 Ngô Quyền, HN',      '0912345003', N'vtphuong@student.edu.vn',  N'Vũ Đức Thịnh',  '0981110003', 1, '2024-09-05', 1),
+(4, 9,    N'HS004', N'Đinh Quang Hải',   '2009-06-14', N'Nam', N'78 Tràng Thi, HN',      '0912345004', N'student@qlhocsinh.edu.vn', N'Đinh Văn Long', '0981110004', 1, '2024-09-05', 1),
+(5, NULL, N'HS005', N'Ngô Thị Lan',      '2009-09-05', N'Nữ',  N'90 Hàng Bông, HN',      '0912345005', NULL,                        N'Ngô Đức An',    '0981110005', 2, '2024-09-05', 1),
+(6, NULL, N'HS006', N'Bùi Văn Minh',     '2008-03-18', N'Nam', N'23 Hàng Gai, HN',       '0912345006', NULL,                        N'Bùi Quang Huy', '0981110006', 3, '2023-09-01', 1),
+(7, NULL, N'HS007', N'Đỗ Thị Nga',       '2008-11-22', N'Nữ',  N'45 Hàng Đào, HN',       '0912345007', NULL,                        N'Đỗ Văn Thành',  '0981110007', 3, '2023-09-01', 1),
+(8, NULL, N'HS008', N'Lý Văn Oanh',      '2008-07-08', N'Nam', N'67 Hàng Ngang, HN',     '0912345008', NULL,                        N'Lý Quang Minh', '0981110008', 4, '2023-09-01', 1),
+(9, NULL, N'HS009', N'Mai Thị Phượng',   '2007-05-15', N'Nữ',  N'89 Đinh Lễ, HN',        '0912345009', NULL,                        N'Mai Văn Tuấn',  '0981110009', 5, '2022-08-25', 1),
+(10,NULL, N'HS010', N'Trịnh Văn Quân',   '2007-12-20', N'Nam', N'11 Lê Thái Tổ, HN',     '0912345010', NULL,                        N'Trịnh Bá Sơn',  '0981110010', 5, '2022-08-25', 1);
 SET IDENTITY_INSERT HOCSINH OFF;
 GO
 

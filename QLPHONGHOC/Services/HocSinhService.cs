@@ -66,6 +66,8 @@ namespace QLPhongHoc.Services
                     DiaChi      = h.DiaChi,
                     SoDienThoai = h.SoDienThoai,
                     Email       = h.Email,
+                    TenPhuHuynh = h.TenPhuHuynh,
+                    SdtPhuHuynh = h.SdtPhuHuynh,
                     MaLop       = h.MaLop,
                     TenLop      = h.Lop != null ? h.Lop.TenLop : string.Empty,
                     TrangThai   = h.TrangThai
@@ -116,6 +118,8 @@ namespace QLPhongHoc.Services
                 DiaChi      = request.DiaChi,
                 SoDienThoai = request.SoDienThoai,
                 Email       = request.Email,
+                TenPhuHuynh = request.TenPhuHuynh,
+                SdtPhuHuynh = request.SdtPhuHuynh,
                 MaLop       = request.MaLop,
                 NgayNhapHoc = DateOnly.FromDateTime(DateTime.Today),
                 TrangThai   = request.TrangThai
@@ -147,6 +151,8 @@ namespace QLPhongHoc.Services
             entity.DiaChi      = request.DiaChi;
             entity.SoDienThoai = request.SoDienThoai;
             entity.Email       = request.Email;
+            entity.TenPhuHuynh = request.TenPhuHuynh;
+            entity.SdtPhuHuynh = request.SdtPhuHuynh;
             entity.MaLop       = request.MaLop;
             entity.TrangThai   = request.TrangThai;
 
@@ -194,6 +200,8 @@ namespace QLPhongHoc.Services
             DiaChi      = h.DiaChi,
             SoDienThoai = h.SoDienThoai,
             Email       = h.Email,
+            TenPhuHuynh = h.TenPhuHuynh,
+            SdtPhuHuynh = h.SdtPhuHuynh,
             MaLop       = h.MaLop,
             TenLop      = h.Lop?.TenLop ?? string.Empty,
             TrangThai   = h.TrangThai

@@ -21,7 +21,6 @@
     var isAdmin  = vaiTro.Equals("ADMIN", StringComparison.OrdinalIgnoreCase);
     var isGV     = vaiTro.Equals("TEACHER", StringComparison.OrdinalIgnoreCase);
     var isHS     = vaiTro.Equals("STUDENT", StringComparison.OrdinalIgnoreCase);
-    var isKTV    = false;
     var isLoggedIn = !string.IsNullOrEmpty(userId);
     var initials = hoTen.Length > 0 ? hoTen.Split(' ').Last().Substring(0, 1).ToUpper() : "U";
     var currentPage = ViewData["ActivePage"] as string ?? "";

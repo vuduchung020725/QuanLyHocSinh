@@ -67,7 +67,8 @@ namespace QLPhongHoc.Services
                         SoDienThoai = t.SoDienThoai,
                         MaVaiTro = t.MaVaiTro,
                         TenVaiTro = t.VaiTro != null ? t.VaiTro.TenVaiTro : string.Empty,
-                        TrangThai = t.TrangThai
+                        TrangThai = t.TrangThai,
+                        NgayTao = t.NgayTao
                     })
                     .ToListAsync();
 
@@ -106,7 +107,8 @@ namespace QLPhongHoc.Services
                     SoDienThoai = user.SoDienThoai,
                     MaVaiTro = user.MaVaiTro,
                     TenVaiTro = user.VaiTro != null ? user.VaiTro.TenVaiTro : string.Empty,
-                    TrangThai = user.TrangThai
+                    TrangThai = user.TrangThai,
+                    NgayTao = user.NgayTao
                 };
             }
             catch (Exception ex)

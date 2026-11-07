@@ -14,7 +14,7 @@ namespace QLPhongHoc.Services
         Task<PagedResult<DiemDto>> GetDiemsAsync(int? maHocSinh, int? maMonHoc, int? maHocKy, int? maLop, int pageNumber, int pageSize);
         Task<DiemDto?> GetDiemByIdAsync(int id);
         Task<DiemDto?> GetDiemByKeyAsync(int maHocSinh, int maMonHoc, int maHocKy);
-        Task<DiemDto> UpsertDiemAsync(NhapDiemRequest request, int maGiaoVienNhap);
+        Task<DiemDto> UpsertDiemAsync(NhapDiemRequest request, int maGiaoVienNhap, bool isAdmin = false);
         Task<List<DiemDto>> GetDiemOfHocSinhAsync(int maHocSinh, int? maHocKy);
         Task<bool> DeleteDiemAsync(int id);
     }
@@ -77,18 +77,69 @@ namespace QLPhongHoc.Services
             return d == null ? null : MapToDto(d);
         }
 
-        public async Task<DiemDto> UpsertDiemAsync(NhapDiemRequest request, int maGiaoVienNhap)
+        public async Task<DiemDto> UpsertDiemAsync(NhapDiemRequest request, int maGiaoVienNhap, bool isAdmin = false)
         {
             ValidateDiem(request);
 
-            decimal? dtb = null;
-            if (request.DiemMieng.HasValue && request.Diem15Phut.HasValue && request.DiemGiuaKy.HasValue && request.DiemCuoiKy.HasValue)
+            // Kiểm tra ràng buộc phân công giảng dạy (Authorization Constraint)
+            if (!isAdmin)
             {
-                dtb = Math.Round(
-                    request.DiemMieng.Value * 0.1m +
-                    request.Diem15Phut.Value * 0.2m +
-                    request.DiemGiuaKy.Value * 0.3m +
-                    request.DiemCuoiKy.Value * 0.4m, 2);
+                var hocSinh = await _context.HOCSINH.AsNoTracking().FirstOrDefaultAsync(h => h.MaHocSinh == request.MaHocSinh);
+                if (hocSinh == null)
+                {
+                    throw new ArgumentException("Không tìm thấy thông tin học sinh.");
+                }
+
+                var hocKy = await _context.HOCKY.AsNoTracking().FirstOrDefaultAsync(hk => hk.MaHocKy == request.MaHocKy);
+                if (hocKy == null)
+                {
+                    throw new ArgumentException("Không tìm thấy thông tin học kỳ.");
+                }
+
+                var isAssigned = await _context.PHANCONG.AnyAsync(p =>
+                    p.MaGiaoVien == maGiaoVienNhap &&
+                    p.MaLop == hocSinh.MaLop &&
+                    p.MaMonHoc == request.MaMonHoc &&
+                    p.MaNamHoc == hocKy.MaNamHoc &&
+                    p.HocKy == hocKy.SoHocKy &&
+                    p.TrangThai == true);
+
+                if (!isAssigned)
+                {
+                    throw new UnauthorizedAccessException("Bạn không được phân công giảng dạy lớp/môn này trong học kỳ tương ứng.");
+                }
+            }
+
+            // Tính điểm trung bình môn theo công thức trọng số chuẩn Bộ GD:
+            // DTBM = (Điểm Miệng*1 + Điểm 15P*1 + Giữa kỳ*2 + Cuối kỳ*3) / (1 + 1 + 2 + 3)
+            decimal? dtb = null;
+            decimal tongDiem = 0m;
+            int tongHeSo = 0;
+
+            if (request.DiemMieng.HasValue)
+            {
+                tongDiem += request.DiemMieng.Value * 1m;
+                tongHeSo += 1;
+            }
+            if (request.Diem15Phut.HasValue)
+            {
+                tongDiem += request.Diem15Phut.Value * 1m;
+                tongHeSo += 1;
+            }
+            if (request.DiemGiuaKy.HasValue)
+            {
+                tongDiem += request.DiemGiuaKy.Value * 2m;
+                tongHeSo += 2;
+            }
+            if (request.DiemCuoiKy.HasValue)
+            {
+                tongDiem += request.DiemCuoiKy.Value * 3m;
+                tongHeSo += 3;
+            }
+
+            if (tongHeSo > 0)
+            {
+                dtb = Math.Round(tongDiem / tongHeSo, 2);
             }
 
             var existing = await _context.DIEM.FirstOrDefaultAsync(d =>

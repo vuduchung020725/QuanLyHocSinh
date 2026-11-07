@@ -38,6 +38,12 @@ namespace QLPhongHoc.Models
         [StringLength(100)]
         public string? Email { get; set; }
 
+        [StringLength(100)]
+        public string? TenPhuHuynh { get; set; }
+
+        [StringLength(15)]
+        public string? SdtPhuHuynh { get; set; }
+
         public int MaLop { get; set; }
         [ForeignKey("MaLop")]
         public Lop Lop { get; set; } = null!;
@@ -48,5 +54,6 @@ namespace QLPhongHoc.Models
 
         // Navigation
         public ICollection<Diem> Diems { get; set; } = new List<Diem>();
+        public ICollection<LichSuZalo> LichSuZalos { get; set; } = new List<LichSuZalo>();
     }
 }

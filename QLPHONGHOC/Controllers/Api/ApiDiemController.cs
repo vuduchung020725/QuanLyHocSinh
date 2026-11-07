@@ -6,17 +6,23 @@ using QLPhongHoc.Services;
 
 namespace QLPhongHoc.Controllers.Api
 {
+    [Route("api/diem")]
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "ADMIN,TEACHER,STUDENT")]
     public class ApiDiemController : ControllerBase
     {
         private readonly IDiemService _diemService;
+        private readonly IExcelExportService _excelExportService;
         private readonly Data.QLPhongHocContext _dbContext;
 
-        public ApiDiemController(IDiemService diemService, Data.QLPhongHocContext dbContext)
+        public ApiDiemController(
+            IDiemService diemService,
+            IExcelExportService excelExportService,
+            Data.QLPhongHocContext dbContext)
         {
             _diemService = diemService;
+            _excelExportService = excelExportService;
             _dbContext = dbContext;
         }
 
@@ -81,29 +87,65 @@ namespace QLPhongHoc.Controllers.Api
 
             try
             {
-                int? maGiaoVienNhap = await GetMaGiaoVienOfCurrentTeacherAsync();
-                if (!maGiaoVienNhap.HasValue)
+                bool isAdmin = User.IsInRole("ADMIN");
+                int maGiaoVienNhap = 0;
+
+                if (!isAdmin)
                 {
-                    if (User.IsInRole("ADMIN"))
+                    var gvId = await GetMaGiaoVienOfCurrentTeacherAsync();
+                    if (!gvId.HasValue)
                     {
-                        var firstActiveGv = await _dbContext.GIAOVIEN.AsNoTracking()
-                            .Where(g => g.TrangThai == true)
-                            .OrderBy(g => g.MaGiaoVien)
-                            .Select(g => g.MaGiaoVien)
-                            .FirstOrDefaultAsync();
-                        maGiaoVienNhap = firstActiveGv > 0 ? firstActiveGv : 1;
+                        return StatusCode(StatusCodes.Status403Forbidden, new { success = false, message = "Tài khoản giáo viên chưa được liên kết với dữ liệu GIAOVIEN trong hệ thống. Vui lòng liên hệ ADMIN." });
                     }
-                    else
-                    {
-                        return BadRequest(new { success = false, message = "Tài khoản giáo viên chưa được liên kết với dữ liệu GIAOVIEN trong hệ thống. Vui lòng liên hệ ADMIN." });
-                    }
+                    maGiaoVienNhap = gvId.Value;
                 }
-                var result = await _diemService.UpsertDiemAsync(request, maGiaoVienNhap.Value);
+
+                var result = await _diemService.UpsertDiemAsync(request, maGiaoVienNhap, isAdmin);
                 return Ok(result);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new { success = false, message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// POST: /api/diem/update-grade - Endpoint chuẩn theo đặc tả hệ thống
+        /// </summary>
+        [HttpPost("update-grade")]
+        [Authorize(Roles = "ADMIN,TEACHER")]
+        public Task<IActionResult> UpdateGrade([FromBody] NhapDiemRequest request) => UpsertDiem(request);
+
+        /// <summary>
+        /// GET: /api/diem/export-excel?maLop=1&maHocKy=1 - Tải file Excel bảng điểm của lớp
+        /// </summary>
+        [HttpGet("export-excel")]
+        [Authorize(Roles = "ADMIN,TEACHER")]
+        public async Task<IActionResult> ExportExcel([FromQuery] int maLop, [FromQuery] int maHocKy)
+        {
+            try
+            {
+                var bytes = await _excelExportService.ExportBangDiemLopAsync(maLop, maHocKy);
+                var lop = await _dbContext.LOP.FindAsync(maLop);
+                var tenLopSlug = lop?.TenLop?.Replace(" ", "_") ?? $"Lop{maLop}";
+                var fileName = $"BangDiem_{tenLopSlug}_HK{maHocKy}_{DateTime.Now:yyyyMMdd_HHmm}.xlsx";
+                return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
             }
         }
 

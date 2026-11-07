@@ -1,0 +1,186 @@
+@model QLPhongHoc.Models.PagedResult<QLPhongHoc.Models.AccountDto>
+@{
+    ViewData["Title"] = "Quản lý Tài khoản & Phê duyệt";
+    var vaiTros = ViewData["VaiTros"] as List<QLPhongHoc.Models.VaiTro> ?? new List<QLPhongHoc.Models.VaiTro>();
+    var currentKeyword = ViewData["Keyword"] as string ?? "";
+    var currentTrangThai = ViewData["TrangThai"] as bool?;
+    var currentMaVaiTro = ViewData["MaVaiTro"] as int?;
+    var pendingCount = Model.Items.Count(x => !x.TrangThai);
+}
+
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1 text-primary fw-bold">Quản lý Tài khoản & Phê duyệt</h2>
+            <p class="text-muted mb-0">Xem danh sách, phân quyền và phê duyệt tài khoản người dùng đăng ký mới</p>
+        </div>
+        <div>
+            <span class="badge bg-secondary fs-6 p-2">Tổng số: @Model.TotalItems tài khoản</span>
+        </div>
+    </div>
+
+    @if (pendingCount > 0)
+    {
+        <div class="alert alert-warning d-flex align-items-center mb-4 shadow-sm" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+            </svg>
+            <div>
+                <strong>Chú ý:</strong> Đang có <strong>@pendingCount</strong> tài khoản mới ở trạng thái <em>Chờ duyệt</em>. Vui lòng kiểm tra và bấm nút <strong>Duyệt</strong> để cho phép họ đăng nhập hệ thống.
+            </div>
+        </div>
+    }
+
+    <!-- Thanh tìm kiếm & bộ lọc -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">Tìm kiếm</label>
+                    <input type="text" name="keyword" value="@currentKeyword" class="form-control" placeholder="Tên đăng nhập, họ tên, email, SĐT..." />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Trạng thái</label>
+                    <select name="trangThai" class="form-select">
+                        <option value="">-- Tất cả trạng thái --</option>
+                        <option value="true" selected="@(currentTrangThai == true)">Hoạt động (Đã duyệt)</option>
+                        <option value="false" selected="@(currentTrangThai == false)">Chờ duyệt / Khóa</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">Vai trò</label>
+                    <select name="maVaiTro" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                        @foreach (var vt in vaiTros)
+                        {
+                            <option value="@vt.MaVaiTro" selected="@(currentMaVaiTro == vt.MaVaiTro)">@vt.TenVaiTro</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100 me-2">Lọc</button>
+                    <a href="@Url.Action("ManageUsers", "Account")" class="btn btn-outline-secondary">Đặt lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bảng danh sách tài khoản -->
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">Mã TK</th>
+                        <th>Tên đăng nhập</th>
+                        <th>Họ và tên</th>
+                        <th>Email / SĐT</th>
+                        <th>Vai trò</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tạo</th>
+                        <th class="text-end pe-3">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (Model.Items.Count == 0)
+                {
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">Không tìm thấy tài khoản nào phù hợp.</td>
+                    </tr>
+                }
+                @foreach (var user in Model.Items)
+                {
+                    <tr class="@(!user.TrangThai ? "table-warning bg-opacity-25" : "")">
+                        <td class="ps-3 fw-bold">#@user.MaTaiKhoan</td>
+                        <td>
+                            <span class="fw-semibold text-dark">@user.TenDangNhap</span>
+                        </td>
+                        <td>@user.HoTen</td>
+                        <td>
+                            <div class="small text-muted">@user.Email</div>
+                            @if (!string.IsNullOrEmpty(user.SoDienThoai))
+                            {
+                                <div class="small text-muted">@user.SoDienThoai</div>
+                            }
+                        </td>
+                        <td>
+                            @if (user.TenVaiTro.Equals("ADMIN", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <span class="badge bg-danger">ADMIN</span>
+                            }
+                            else if (user.TenVaiTro.Equals("TEACHER", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <span class="badge bg-info text-dark">TEACHER</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">STUDENT</span>
+                            }
+                        </td>
+                        <td>
+                            @if (user.TrangThai)
+                            {
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle"></i> Hoạt động
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-clock"></i> Chờ duyệt / Khóa
+                                </span>
+                            }
+                        </td>
+                        <td class="text-muted small">
+                            @user.NgayTao.ToString("dd/MM/yyyy HH:mm")
+                        </td>
+                        <td class="text-end pe-3">
+                            <div class="btn-group btn-group-sm" role="group">
+                                @if (!user.TrangThai)
+                                {
+                                    <form method="post" action="@Url.Action("ApproveUser", "Account", new { id = user.MaTaiKhoan })" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-success me-1" title="Phê duyệt tài khoản">
+                                            ✓ Duyệt
+                                        </button>
+                                    </form>
+                                }
+
+                                <form method="post" action="@Url.Action("ToggleUserStatus", "Account", new { id = user.MaTaiKhoan })" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm @(user.TrangThai ? "btn-outline-warning" : "btn-outline-info") me-1" title="@(user.TrangThai ? "Khóa tài khoản" : "Mở khóa tài khoản")">
+                                        @(user.TrangThai ? "Khóa" : "Mở")
+                                    </button>
+                                </form>
+
+                                <form method="post" action="@Url.Action("DeleteUser", "Account", new { id = user.MaTaiKhoan })" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa/vô hiệu hóa tài khoản @user.TenDangNhap?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa tài khoản">
+                                        Xóa
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.TotalPages > 1)
+        {
+            <div class="card-footer d-flex justify-content-between align-items-center py-2">
+                <span class="small text-muted">Trang @Model.PageNumber / @Model.TotalPages</span>
+                <ul class="pagination pagination-sm mb-0">
+                    @for (int p = 1; p <= Model.TotalPages; p++)
+                    {
+                        <li class="page-item @(p == Model.PageNumber ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("ManageUsers", "Account", new { keyword = currentKeyword, trangThai = currentTrangThai, maVaiTro = currentMaVaiTro, page = p })">@p</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+

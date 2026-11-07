@@ -20,6 +20,12 @@
 
     <dt class="col-sm-3">Lớp</dt>
     <dd class="col-sm-9">@Model.TenLop</dd>
+
+    <dt class="col-sm-3">Phụ huynh</dt>
+    <dd class="col-sm-9">@(Model.TenPhuHuynh ?? "Chưa cập nhật")</dd>
+
+    <dt class="col-sm-3">SĐT Phụ huynh (Zalo)</dt>
+    <dd class="col-sm-9">@(Model.SdtPhuHuynh ?? "Chưa cập nhật")</dd>
 </dl>
 
 <a class="btn btn-secondary" href="@Url.Action("Index","HocSinh")">Quay lại</a>

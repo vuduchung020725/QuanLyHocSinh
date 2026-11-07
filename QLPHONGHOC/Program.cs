@@ -97,6 +97,8 @@ builder.Services.AddScoped<ILopService, LopService>();
 builder.Services.AddScoped<IMonHocService, MonHocService>();
 builder.Services.AddScoped<INamHocService, NamHocService>();
 builder.Services.AddScoped<IPhanCongService, PhanCongService>();
+builder.Services.AddScoped<IExcelExportService, ExcelExportService>();
+builder.Services.AddScoped<IZaloNotificationService, ZaloNotificationService>();
 
 var app = builder.Build();
 

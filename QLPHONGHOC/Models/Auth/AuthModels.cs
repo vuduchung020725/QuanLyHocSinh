@@ -6,10 +6,10 @@ namespace QLPhongHoc.Models.Auth
     public class LoginRequest
     {
         /// <summary>Tên đăng nhập (Username)</summary>
-        public string TenDangNhap { get; set; }
+        public string TenDangNhap { get; set; } = string.Empty;
 
         /// <summary>Mật khẩu</summary>
-        public string MatKhau { get; set; }
+        public string MatKhau { get; set; } = string.Empty;
 
         /// <summary>Ghi nhớ đăng nhập (optional)</summary>
         public bool GhiNho { get; set; }
@@ -24,19 +24,19 @@ namespace QLPhongHoc.Models.Auth
         public bool Success { get; set; }
 
         /// <summary>Thông báo (lỗi hoặc thành công)</summary>
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
 
         /// <summary>Mã lỗi (nếu có)</summary>
-        public string ErrorCode { get; set; }
+        public string? ErrorCode { get; set; }
 
         /// <summary>JWT Token (nếu đăng nhập thành công)</summary>
-        public string Token { get; set; }
+        public string? Token { get; set; }
 
         /// <summary>Thời gian hết hạn token (tính bằng giây)</summary>
         public int ExpiresIn { get; set; }
 
         /// <summary>Thông tin người dùng đã đăng nhập</summary>
-        public UserInfoDto UserInfo { get; set; }
+        public UserInfoDto? UserInfo { get; set; }
     }
 
     /// <summary>
@@ -48,25 +48,25 @@ namespace QLPhongHoc.Models.Auth
         public int MaTaiKhoan { get; set; }
 
         /// <summary>Tên đăng nhập</summary>
-        public string TenDangNhap { get; set; }
+        public string TenDangNhap { get; set; } = string.Empty;
 
         /// <summary>Họ và tên</summary>
-        public string HoTen { get; set; }
+        public string HoTen { get; set; } = string.Empty;
 
         /// <summary>Email</summary>
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         /// <summary>Số điện thoại</summary>
-        public string SoDienThoai { get; set; }
+        public string? SoDienThoai { get; set; }
 
         /// <summary>Mã vai trò</summary>
         public int MaVaiTro { get; set; }
 
         /// <summary>Tên vai trò</summary>
-        public string TenVaiTro { get; set; }
+        public string TenVaiTro { get; set; } = string.Empty;
 
         /// <summary>Trạng thái tài khoản</summary>
-        public string TrangThai { get; set; }
+        public string TrangThai { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -75,22 +75,22 @@ namespace QLPhongHoc.Models.Auth
     public class RegisterRequest
     {
         /// <summary>Tên đăng nhập</summary>
-        public string TenDangNhap { get; set; }
+        public string TenDangNhap { get; set; } = string.Empty;
 
         /// <summary>Mật khẩu</summary>
-        public string MatKhau { get; set; }
+        public string MatKhau { get; set; } = string.Empty;
 
         /// <summary>Xác nhận mật khẩu</summary>
-        public string XacNhanMatKhau { get; set; }
+        public string XacNhanMatKhau { get; set; } = string.Empty;
 
         /// <summary>Họ và tên</summary>
-        public string HoTen { get; set; }
+        public string HoTen { get; set; } = string.Empty;
 
         /// <summary>Email</summary>
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         /// <summary>Số điện thoại</summary>
-        public string SoDienThoai { get; set; }
+        public string? SoDienThoai { get; set; }
     }
 
     /// <summary>
@@ -102,10 +102,10 @@ namespace QLPhongHoc.Models.Auth
         public bool Success { get; set; }
 
         /// <summary>Thông báo</summary>
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
 
         /// <summary>Mã lỗi (nếu có)</summary>
-        public string ErrorCode { get; set; }
+        public string? ErrorCode { get; set; }
 
         /// <summary>Mã tài khoản (nếu tạo thành công)</summary>
         public int? MaTaiKhoan { get; set; }
@@ -117,12 +117,12 @@ namespace QLPhongHoc.Models.Auth
     public class ApiErrorResponse
     {
         /// <summary>Mã lỗi</summary>
-        public string ErrorCode { get; set; }
+        public string ErrorCode { get; set; } = string.Empty;
 
         /// <summary>Thông báo lỗi</summary>
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
 
         /// <summary>Chi tiết lỗi (nếu có)</summary>
-        public object Details { get; set; }
+        public object? Details { get; set; }
     }
 }
